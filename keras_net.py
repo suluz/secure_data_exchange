@@ -8,12 +8,12 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
 # hyper-parameters
-batch = 10
-epochs = 100
-hidden_neuron_num = 1
-l_r = 0.1
-l2_reg = 0.01
-exp_rounds = 10
+batch = 10 # batch size
+epochs = 100 # training epoch number
+hidden_neuron_num = 1 # number of neurons in a hidden layer
+l_r = 0.1 # learning rate
+l2_reg = 0.01 # l2 regulariser
+exp_rounds = 10 # number of runs to produce average results
 train_acc_man = []
 test_acc_man = []
 timing_man = []
@@ -51,17 +51,22 @@ def train_model(x_train, x_test, y_train, y_test):
         # keras neural net
         tf.keras.backend.clear_session()
         model = tf.keras.Sequential([
+            # weights between input layer and the first hidden layer
             tf.keras.layers.Dense(
-                hidden_neuron_num, 
-                input_shape=(x_train.shape[1], ), 
+                hidden_neuron_num, # output size
+                input_shape=(x_train.shape[1], ), # input size, just for the input layer 
                 activation='sigmoid', 
                 kernel_initializer='zeros',
                 # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
                 use_bias=False,
                 kernel_regularizer=tf.keras.regularizers.L2(l2_reg)),
-            # tf.keras.layers.Dense(hidden_neuron_num, activation='sigmoid'),
+            # weights between the first hidden layer and the second hidden layer
+            # more layer can be added or deleted
             tf.keras.layers.Dense(
-                y_train.shape[1], 
+                hidden_neuron_num, # output size
+                activation='sigmoid'),
+            tf.keras.layers.Dense(
+                y_train.shape[1], # output size
                 activation='softmax', 
                 kernel_initializer='zeros',
                 # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),

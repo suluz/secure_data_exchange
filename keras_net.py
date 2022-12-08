@@ -1,7 +1,10 @@
 import numpy as np
+import pandas as pd
 from os import path
 import tensorflow as tf
 import statistics as stat
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
 # hyper-parameters
@@ -20,18 +23,35 @@ timing_keras = []
 
 # read data
 # fill the read_data() func yourself
-x, y = read_data()
+def read_data(df):
+    # write you data reading function here
+    # features should be min-max normalised
+    # labels should be converted to one-hot encoded list
+    # returned values are two numpy arrays
+
+    # initialising the features and labels as the part of dataframes (series)
+    df_features = df.iloc[:,:4]
+    arr = df.iloc[:,4].to_numpy()
+    df_labels = arr.reshape(-1,1)
+    
+    # initialising the scaler (min-max) and encoder (one-hot)
+    scaler = MinMaxScaler()
+    encoder = OneHotEncoder(sparse=False)
+
+    features = scaler.fit_transform(df_features)    
+    labels = encoder.fit_transform(df_labels)
+    
+    return np.array(features), np.array(labels)
+
+df = pd.read_csv('mixed_0101_abrupto.csv')
+
+x, y = read_data(df)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
 # # test
 # print('y_train:\n', y_train)
 
-def read_data(self):
-    # write you data reading function here
-    # features should be min-max normalised
-    # labels should be converted to one-hot encoded list
-    # returned values are two numpy arrays
-    return np.array(features), np.array(labels)
+
 
 for i in range(exp_rounds):
     print("***** Round %d *****" % i)

@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 # hyper-parameters
 batch = 10 # batch size
 epochs = 100 # training epoch number
-hidden_neuron_num = 1 # number of neurons in a hidden layer
+hidden_neuron_num = [1] # number of neurons in each hidden layer, you can add as many hidden layers as possible
 l_r = 0.1 # learning rate
 l2_reg = 0.01 # l2 regulariser
 exp_rounds = 10 # number of runs to produce average results
@@ -50,21 +50,31 @@ def train_model(x_train, x_test, y_train, y_test):
         print("***** Round %d *****" % i)
         # keras neural net
         tf.keras.backend.clear_session()
-        model = tf.keras.Sequential([
+        layers = [
             # weights between input layer and the first hidden layer
             tf.keras.layers.Dense(
-                hidden_neuron_num, # output size
+                hidden_neuron_num[0], # output size
                 input_shape=(x_train.shape[1], ), # input size, just for the input layer 
                 activation='sigmoid', 
                 kernel_initializer='zeros',
                 # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
                 use_bias=False,
-                kernel_regularizer=tf.keras.regularizers.L2(l2_reg)),
-            # weights between the first hidden layer and the second hidden layer
-            # more layer can be added or deleted
-            tf.keras.layers.Dense(
-                hidden_neuron_num, # output size
-                activation='sigmoid'),
+                kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
+        ]
+        # weights between the first hidden layer and the second hidden layer
+        # more layer can be added or deleted
+        for j in range(1, 1, len(hidden_neuron_num)):
+            layers.append(
+                tf.keras.layers.Dense(
+                    hidden_neuron_num[j], # output size
+                    activation='sigmoid',
+                    kernel_initializer='zeros',
+                    # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
+                    use_bias=True,
+                    kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
+            )
+        # add output layer
+        layers.append(
             tf.keras.layers.Dense(
                 y_train.shape[1], # output size
                 activation='softmax', 
@@ -72,7 +82,8 @@ def train_model(x_train, x_test, y_train, y_test):
                 # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
                 bias_initializer='zeros',
                 kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
-        ])
+        )
+        model = tf.keras.Sequential(layers=layers)
         opt = tf.keras.optimizers.SGD(learning_rate=l_r, momentum=0.0)
         model.compile(optimizer=opt,
                     loss='categorical_crossentropy',

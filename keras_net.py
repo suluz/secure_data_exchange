@@ -9,9 +9,9 @@ from sklearn.model_selection import train_test_split
 import sys
 
 # hyper-parameters
-batch = 10 # batch size
+batch = 20 # batch size
 epochs = 100 # training epoch number
-hidden_neuron_num = [10,10] # number of neurons in each hidden layer, you can add as many hidden layers as possible
+hidden_neuron_num = [100,100] # number of neurons in each hidden layer, you can add as many hidden layers as possible
 l_r = 0.1 # learning rate
 l2_reg = 0.01 # l2 regulariser
 exp_rounds = 1 # number of runs to produce average results
@@ -33,7 +33,7 @@ def read_data(df, label_col_index):
     # initialising the features and labels as the part of dataframes (series)
     arr = df.iloc[:,label_col_index].to_numpy()
     df_labels = arr.reshape(-1,1)
-    features = df.drop([label_col_index], axis=1).to_numpy()
+    features = df.drop(df.columns[[label_col_index]], axis=1).to_numpy()
     
     # initialising the scaler (min-max) and encoder (one-hot)
     scaler = MinMaxScaler()
@@ -58,8 +58,8 @@ def train_model(x_train, x_test, y_train, y_test):
                 hidden_neuron_num[0], # output size
                 input_shape=(x_train.shape[1], ), # input size, just for the input layer 
                 activation='sigmoid', 
-                kernel_initializer='zeros',
-                # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
+                # kernel_initializer='zeros',
+                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
                 use_bias=False,
                 kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
         ]
@@ -70,9 +70,9 @@ def train_model(x_train, x_test, y_train, y_test):
                 tf.keras.layers.Dense(
                     hidden_neuron_num[j], # output size
                     activation='sigmoid',
-                    kernel_initializer='zeros',
-                    # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
-                    use_bias=True,
+                    # kernel_initializer='zeros',
+                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
+                    bias_initializer='zeros',
                     kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
             )
         # add output layer
@@ -80,8 +80,8 @@ def train_model(x_train, x_test, y_train, y_test):
             tf.keras.layers.Dense(
                 y_train.shape[1], # output size
                 activation='softmax', 
-                kernel_initializer='zeros',
-                # kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
+                # kernel_initializer='zeros',
+                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=42),
                 bias_initializer='zeros',
                 kernel_regularizer=tf.keras.regularizers.L2(l2_reg))
         )
@@ -102,33 +102,33 @@ def train_model(x_train, x_test, y_train, y_test):
         # results
         print('Training accuracy:\n', train_accuracy*100)
         print('Test accuracy:\n', test_accuracy*100)
-        print("Keras trained weights:\n", model.get_weights())
+        # print("Keras trained weights:\n", model.get_weights())
 
         # sys.exit()
         
-    print("\n"+"*"*20)
-    print("Hyper-parameters:")
-    print("learning rate: %.2f, l2 regularisor: %.2f, batch size: %d, epochs: %d" % (l_r, l2_reg, batch, epochs))
-    print("\n"+"*"*20)
-    print("%d Rounds Stats of Accuracy, Manual, Keras:" % exp_rounds)
-    print("Training Mean:", stat.mean(train_acc_keras))
-    print("Training Median:", stat.median(train_acc_keras))
-    print("Training Std Deviation:", stat.stdev(train_acc_keras))
-    print("Test Mean:", stat.mean(test_acc_keras))
-    print("Test Median:", stat.median(test_acc_keras))
-    print("Test Std Deviation:", stat.stdev(test_acc_keras))
+    # print("\n"+"*"*20)
+    # print("Hyper-parameters:")
+    # print("learning rate: %.2f, l2 regularisor: %.2f, batch size: %d, epochs: %d" % (l_r, l2_reg, batch, epochs))
+    # print("\n"+"*"*20)
+    # print("%d Rounds Stats of Accuracy, Manual, Keras:" % exp_rounds)
+    # print("Training Mean:", stat.mean(train_acc_keras))
+    # print("Training Median:", stat.median(train_acc_keras))
+    # print("Training Std Deviation:", stat.stdev(train_acc_keras))
+    # print("Test Mean:", stat.mean(test_acc_keras))
+    # print("Test Median:", stat.median(test_acc_keras))
+    # print("Test Std Deviation:", stat.stdev(test_acc_keras))
 
 # # test - read iris data
-# df = pd.read_csv('iris.data', header=None)
+# df = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
 # x, y = read_data(df, 4)
-# print(x[0][0])
-# print(y[0])
+# print(x)
+# print(y)
 
 # sys.exit()
 
 
-df_a = pd.read_csv('mixed_0101_abrupto.csv')
-df_b = pd.read_csv('mixed_1010_abrupto.csv')
+df_a = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
+df_b = pd.read_csv('./datasets/mixed_1010_abrupto.csv')
 
 a_x, a_y = read_data(df_a, 4)
 a_x_train, a_x_test, a_y_train, a_y_test = train_test_split(a_x, a_y, test_size=0.2, random_state=42)

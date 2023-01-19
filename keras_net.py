@@ -1,8 +1,9 @@
-import numpy as np
+# import numpy as np
 import pandas as pd
-from os import path
+# from os import path
 import tensorflow as tf
-import statistics as stat
+# import statistics as stat
+import copy
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
@@ -35,11 +36,15 @@ def read_data(df, label_col_index):
     df_labels = arr.reshape(-1,1)
     features = df.drop(df.columns[[label_col_index]], axis=1).to_numpy()
     
-    # initialising the scaler (min-max) and encoder (one-hot)
-    scaler = MinMaxScaler()
-    encoder = OneHotEncoder(sparse=False)
+    # scaler (min-max)
+    # scaler = MinMaxScaler()
+    # feats = scaler.fit_transform(features)  
 
-    feats = scaler.fit_transform(features)    
+    # no scaler
+    feats = copy.deepcopy(features)
+
+    # encoder (one-hot)
+    encoder = OneHotEncoder(sparse=False) 
     labels = encoder.fit_transform(df_labels)
     
     # return np.array(features), np.array(labels)
@@ -119,7 +124,7 @@ def train_model(x_train, x_test, y_train, y_test):
     # print("Test Std Deviation:", stat.stdev(test_acc_keras))
 
 # # test - read iris data
-# df = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
+# df = pd.read_csv('./datasets/mixed_1010_abrupto_1.csv')
 # x, y = read_data(df, 4)
 # print(x)
 # print(y)
@@ -127,8 +132,8 @@ def train_model(x_train, x_test, y_train, y_test):
 # sys.exit()
 
 
-df_a = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
-df_b = pd.read_csv('./datasets/mixed_1010_abrupto.csv')
+df_a = pd.read_csv('./datasets/mixed_1010_abrupto_1.csv')
+df_b = pd.read_csv('./datasets/mixed_1010_abrupto_2.csv')
 
 a_x, a_y = read_data(df_a, 4)
 a_x_train, a_x_test, a_y_train, a_y_test = train_test_split(a_x, a_y, test_size=0.2, random_state=42)
@@ -136,12 +141,12 @@ a_x_train, a_x_test, a_y_train, a_y_test = train_test_split(a_x, a_y, test_size=
 b_x, b_y = read_data(df_b, 4)
 b_x_train, b_x_test, b_y_train, b_y_test = train_test_split(b_x, b_y, test_size=0.2, random_state=42)
 
-df_c = pd.merge(df_a, df_b) # Adding two datasets (dataset A + dataset B)
+# df_c = pd.merge(df_a, df_b) # Adding two datasets (dataset A + dataset B)
 
-c_x, c_y = read_data(df_c, 4)
-c_x_train, c_x_test, c_y_train, c_y_test = train_test_split(c_x, c_y, test_size=0.2, random_state=42)
+# c_x, c_y = read_data(df_c, 4)
+# c_x_train, c_x_test, c_y_train, c_y_test = train_test_split(c_x, c_y, test_size=0.2, random_state=42)
 
 # # test
 # print('y_train:\n', y_train)
 train_model(a_x_train, b_x_test, a_y_train, b_y_test)
-train_model(c_x_train, b_x_test, c_y_train, b_y_test)
+train_model(b_x_train, b_x_test, b_y_train, b_y_test)

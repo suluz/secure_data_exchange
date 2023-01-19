@@ -118,13 +118,13 @@ def train_model(x_train, x_test, y_train, y_test):
     # print("Test Median:", stat.median(test_acc_keras))
     # print("Test Std Deviation:", stat.stdev(test_acc_keras))
 
-# test - read iris data
-df = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
-x, y = read_data(df, 4)
-print(x)
-print(y)
+# # test - read iris data
+# df = pd.read_csv('./datasets/mixed_0101_abrupto.csv')
+# x, y = read_data(df, 4)
+# print(x)
+# print(y)
 
-sys.exit()
+# sys.exit()
 
 
 df_a = pd.read_csv('./datasets/mixed_0101_abrupto.csv')

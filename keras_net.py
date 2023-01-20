@@ -13,10 +13,13 @@ import copy
 
 # hyper-parameters
 batch = 20 # batch size
+batch = 20 # batch size
 epochs = 100 # training epoch number
+hidden_neuron_num = [100,100] # number of neurons in each hidden layer, you can add as many hidden layers as possible
 hidden_neuron_num = [100,100] # number of neurons in each hidden layer, you can add as many hidden layers as possible
 l_r = 0.1 # learning rate
 l2_reg = 0.01 # l2 regulariser
+exp_rounds = 1 # number of runs to produce average results
 exp_rounds = 1 # number of runs to produce average results
 train_acc_man = []
 test_acc_man = []
@@ -42,7 +45,9 @@ def read_data(df, label_col_index):
 
     # initialising the features and labels as the part of dataframes (series)
     arr = df.iloc[:,label_col_index].to_numpy()
+    arr = df.iloc[:,label_col_index].to_numpy()
     df_labels = arr.reshape(-1,1)
+    features = df.drop(df.columns[[label_col_index]], axis=1).to_numpy()
     features = df.drop(df.columns[[label_col_index]], axis=1).to_numpy()
     
     # scaler (min-max)
@@ -54,8 +59,19 @@ def read_data(df, label_col_index):
 
     # encoder (one-hot)
     encoder = OneHotEncoder(sparse=False) 
+    # scaler (min-max)
+    # scaler = MinMaxScaler()
+    # feats = scaler.fit_transform(features)  
+
+    # no scaler
+    feats = copy.deepcopy(features)
+
+    # encoder (one-hot)
+    encoder = OneHotEncoder(sparse=False) 
     labels = encoder.fit_transform(df_labels)
     
+    # return np.array(features), np.array(labels)
+    return feats, labels
     # return np.array(features), np.array(labels)
     return feats, labels
 
